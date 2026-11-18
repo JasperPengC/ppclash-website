@@ -1,0 +1,122 @@
+# Overrides
+
+An override (覆写) is PP Clash's advanced layer: the app first synthesizes a base config from the **subscription** (nodes, groups, rules) and its **built-in security policy**, then applies your overrides **one by one in list order**, and only then hands the result to the mihomo core. Overrides are for things the rules page can't do — bulk-editing groups, pruning nodes, rewriting array fields.
+
+The 配置覆写 (Overrides) page supports multiple override files, each independently enabled or disabled; disabled files are skipped during merging.
+
+## Two modes
+
+| | YAML override | JS override |
+| --- | --- | --- |
+| Best for | Overwriting fields, wholesale array replacement | Logic-driven bulk edits (filtering, mapping, conditional rewrites) |
+| Format | Top-level object (key-value pairs); a top-level array replaces the config wholesale | A function body that mutates `config` or returns a new one |
+| Merging | Deep-merged into the current config | Return value replaces the current config wholesale |
+| Execution | Parsed with js-yaml | QuickJS isolated interpreter, 300ms budget |
+
+Both modes support the <span v-pre>{{CURRENT_NODE}}</span> placeholder: it is replaced with the **currently selected node name** (or `DIRECT` when nothing is selected) at generation time — before the script runs, so in JS you receive a literal string.
+
+## YAML override: a deep-merge patch
+
+A YAML override is a "patch" deep-merged into the current config:
+
+- **Objects**: merged key by key, recursively;
+- **Arrays: replaced wholesale** — not appended! To edit an array, rewrite it in full or use JS;
+- **Scalars**: overwritten directly;
+- **Top level**: an object is deep-merged into the current config; a top-level array replaces the whole config; other types (e.g. a plain scalar) are ignored for that file.
+
+The editor validates syntax live (same parser as the generator) and flags errors in place.
+
+### Example 1: replace the encrypted DNS servers
+
+The app generates encrypted DNS by default; replace the nameservers wholesale with servers you trust:
+
+```yaml
+dns:
+  nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+```
+
+### Example 2: add static host mappings
+
+```yaml
+hosts:
+  "example.internal": 192.168.1.10
+```
+
+## JS override: a config transform
+
+What you write in the editor is a **function body**; execution is equivalent to:
+
+```js
+(function (config) {
+  // your code
+  return config; // implicit if you omit it
+})(config)
+```
+
+Key points:
+
+- `config` is the mihomo config object with core-native keys (`proxies`, `proxy-groups`, `rules`, `mixed-port`, …);
+- You can mutate `config` in place or `return` a new object; it **must be an object** (not an array, no async);
+- It runs in a QuickJS isolated interpreter: no network, no host APIs, no module loading — pure data transformation only;
+- Budget: 300ms execution, 64MB memory, 8MB JSON input/output — timeouts or overruns fail with an error and usable data is kept.
+
+JS is the right tool for arrays (YAML can only replace them wholesale). The editor validates the function body live.
+
+### Example 1: filter nodes by keyword
+
+```js
+// Drop nodes whose names contain marketing keywords, and clean up group references
+// 关键词对应订阅里的真实节点名，通常是中文
+const keywords = ['官网', '流量', '到期'];
+const bad = (name) => keywords.some((k) => name.includes(k));
+
+config.proxies = (config.proxies || []).filter((p) => !bad(p.name));
+for (const g of config['proxy-groups'] || []) {
+  g.proxies = (g.proxies || []).filter((n) => !bad(n));
+}
+```
+
+The keywords in the example match real node names in a subscription, which are usually Chinese — replace them with the words that actually appear in your own node names.
+
+### Example 2: turn a latency auto-group into manual selection
+
+```js
+// The app already manages url-test groups when stable routing is on; this shows field rewriting
+for (const g of config['proxy-groups'] || []) {
+  if (g.type === 'url-test' && g.name === '自动选择') {
+    g.type = 'select';
+    delete g.url;
+    delete g.interval;
+    delete g.tolerance;
+  }
+}
+```
+
+### Example 3: pin a domain to the current node
+
+```js
+// {{CURRENT_NODE}} is replaced with the current node name before the script runs
+const current = '{{CURRENT_NODE}}';
+
+config.rules = [
+  `DOMAIN-SUFFIX,openai.com,${current}`,
+  ...config.rules,
+];
+```
+
+::: warning Mind the rule order
+The `rules` array matches **top to bottom**. Inserting at the very front puts your rule ahead of the app's protection rules; to place it after them, locate the boundary yourself. Sorting, toggling and retargeting subscription rules needs no override — use the rules page in the app first.
+:::
+
+## Order & failure handling
+
+- Overrides apply **in list order**; each one receives the previous one's output;
+- Disabled files are skipped; a YAML parse failure skips that file with a warning in the log; a JS failure aborts generation and keeps usable data;
+- Security-related fields (DNS, TUN, sniffer) are generated by the app; deviations from the default policy are surfaced in 安全防护 → 配置检查 (Security → Config check) in the app.
+
+## Next steps
+
+- For rule-level tweaks, prefer the [routing](/en/guide/routing) page in the app;
+- Group and node relationships are covered in [Subscriptions & Groups](/en/guide/subscription).
