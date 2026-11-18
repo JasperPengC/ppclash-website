@@ -43,7 +43,8 @@ docs/
 └── public/
     ├── brand/            # 猫头 logo（明/暗/favicon）
     └── images/           # 产品截图与特征裁片（明/暗两版）
-.github/workflows/deploy.yml   # GitHub Pages 部署工作流
+
+package.json / package-lock.json # 构建依赖与脚本
 ```
 
 > ⚠️ 首页 `docs/index.md` 与 `docs/en/index.md` 整页是 HTML：**段落内部不要留空行**，否则 Markdown 会把缩进 4 空格以上的 HTML 当成代码块，页面上会直接显示标签源码。
