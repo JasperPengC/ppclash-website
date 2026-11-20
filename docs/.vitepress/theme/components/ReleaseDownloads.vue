@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useData } from 'vitepress'
+import { useData, withBase } from 'vitepress'
 import { data as built } from '../releases.data'
 import { GITHUB_RELEASES } from '../../repo'
 import {
   RELEASE_API,
+  detectPlatform,
+  getCachedRelease,
   parseInstaller,
+  preferRelease,
   slimRelease,
   type Installer,
   type Platform,
@@ -20,16 +23,17 @@ const release = ref<ReleaseInfo | null>(built)
 const os = ref<Platform | null>(null)
 
 const CACHE_KEY = 'pp-latest-release'
-const CACHE_TTL = 30 * 60 * 1000
 
-// 实测状态以 PRODUCT.md 为准：仅这两个组合已完成实机验证
-const VERIFIED = new Set(['macos-x86_64', 'windows-amd64'])
-const PLATFORMS: Platform[] = ['macos', 'windows', 'linux']
-const PLATFORM_NAME: Record<Platform, string> = { macos: 'macOS', windows: 'Windows', linux: 'Linux' }
-const ARCH_ORDER = ['aarch64', 'x86_64', 'amd64', 'arm64']
-const EXT_ORDER = ['dmg', 'exe', 'deb', 'rpm', 'AppImage']
+// 实测状态依据 v0.2.3 发布说明；新增构建不等于完成实机验证。
+const VERIFIED = new Set(['macos-x86_64', 'windows-amd64', 'android-arm64-v8a'])
+const PLATFORMS: Platform[] = ['macos', 'windows', 'linux', 'android']
+const PLATFORM_NAME: Record<Platform, string> = { macos: 'macOS', windows: 'Windows', linux: 'Linux', android: 'Android' }
+const ARCH_ORDER = ['aarch64', 'arm64-v8a', 'x86_64', 'amd64', 'arm64']
+const EXT_ORDER = ['dmg', 'exe', 'deb', 'rpm', 'AppImage', 'apk']
 
 const archName = (platform: Platform, arch: string) => {
+  if (platform === 'android' && arch === 'arm64-v8a') return 'ARM64 (arm64-v8a)'
+  if (platform === 'android' && arch === 'x86_64') return 'x64 (x86_64)'
   if (platform === 'macos' && arch === 'aarch64') return zh.value ? 'Apple 芯片 (aarch64)' : 'Apple silicon (aarch64)'
   if (platform === 'macos' && arch === 'x86_64') return 'Intel (x86_64)'
   if (arch === 'amd64') return 'x64 (amd64)'
@@ -78,20 +82,13 @@ const date = computed(() => {
 })
 
 onMounted(async () => {
-  const ua = navigator.userAgent
-  if (!/Android|iPhone|iPad/i.test(ua)) {
-    os.value = /Mac/i.test(ua) ? 'macos' : /Win/i.test(ua) ? 'windows' : /Linux|X11/i.test(ua) ? 'linux' : null
-  }
+  os.value = detectPlatform(navigator.userAgent, navigator.maxTouchPoints)
 
   try {
-    const cached = sessionStorage.getItem(CACHE_KEY)
+    const cached = getCachedRelease(sessionStorage.getItem(CACHE_KEY), built)
     if (cached) {
-      const { at, value } = JSON.parse(cached)
-      if (Date.now() - at >= 0 && Date.now() - at < CACHE_TTL &&
-          typeof value?.tag === 'string' && Array.isArray(value.assets)) {
-        release.value = value
-        return
-      }
+      release.value = cached
+      return
     }
   } catch {
     // 缓存不可读或损坏时仍向 GitHub 刷新。
@@ -105,8 +102,8 @@ onMounted(async () => {
     if (!res.ok) return
     const fresh = slimRelease(await res.json())
     if (!fresh) return
-    release.value = fresh
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), value: fresh }))
+    release.value = preferRelease(release.value, fresh)
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), value: release.value }))
   } catch {
     // 取不到最新版本时保留构建时快照（或命名规则表）
   }
@@ -122,11 +119,15 @@ onMounted(async () => {
         <a :href="release.url" target="_blank" rel="noopener">{{ zh ? '发布说明' : 'Release notes' }}</a>
         <a v-if="checksum" :href="checksum.url">SHA256SUMS</a>
       </div>
-      <div v-for="g in groups" :key="g.platform" class="pp-dl-group" :class="{ current: g.platform === os }">
+      <div v-for="g in groups" :id="`download-${g.platform}`" :key="g.platform" class="pp-dl-group" :class="{ current: g.platform === os }">
         <div class="pp-dl-platform">
           {{ PLATFORM_NAME[g.platform] }}
           <span v-if="g.platform === os" class="pp-dl-here">{{ zh ? '当前系统' : 'Your system' }}</span>
         </div>
+        <p v-if="g.platform === 'android'" class="pp-dl-note">
+          {{ zh ? 'Android 7.0+ · 仅限 64 位设备；多数手机选择 ARM64 APK。' : 'Android 7.0+ · 64-bit devices only; most phones use the ARM64 APK.' }}
+          <a :href="withBase(zh ? '/guide/android.html' : '/en/guide/android.html')">{{ zh ? '安装与升级说明' : 'Install & upgrade guide' }}</a>
+        </p>
         <div v-for="row in g.rows" :key="row.arch" class="pp-dl-row">
           <div class="pp-dl-arch">
             <strong>{{ archName(g.platform, row.arch) }}</strong>
@@ -156,6 +157,8 @@ onMounted(async () => {
         <div class="pp-dl-row"><div class="pp-dl-arch"><strong>Windows · x64 (amd64)</strong></div><code>PP_Clash-&lt;version&gt;-windows-amd64-setup.exe</code></div>
         <div class="pp-dl-row"><div class="pp-dl-arch"><strong>Windows · ARM64</strong></div><code>PP_Clash-&lt;version&gt;-windows-arm64-setup.exe</code></div>
         <div class="pp-dl-row"><div class="pp-dl-arch"><strong>Linux · x64 / ARM64</strong></div><code>.deb / .rpm / .AppImage</code></div>
+        <div class="pp-dl-row"><div class="pp-dl-arch"><strong>Android · ARM64</strong></div><code>ppclash-android-arm64-v8a-v&lt;version&gt;.apk</code></div>
+        <div class="pp-dl-row"><div class="pp-dl-arch"><strong>Android · x64</strong></div><code>ppclash-android-x86_64-v&lt;version&gt;.apk</code></div>
       </div>
     </template>
   </div>

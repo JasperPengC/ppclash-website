@@ -27,6 +27,8 @@
   --pp-accent-strong: #2457d3;
   --pp-accent-hover: #2457d3;
   --pp-accent-soft: rgba(53, 104, 232, 0.08);
+  --pp-action: #405ed2;
+  --pp-action-hover: #334eb9;
   --pp-success: #24805d;
   --pp-warning: #8b590e;
   --pp-danger: #ba4c4c;
@@ -44,6 +46,8 @@
   /* 全站统一留白基线（流式全宽，随视口缩放） */
   --pp-gutter: clamp(22px, 3.25vw, 72px);
   --pp-content: 1240px;
+  --pp-control-compact: 32px;
+  --pp-control-standard: 40px;
   --vp-nav-height: 76px;
   --header-h: 76px;
   --vp-sidebar-width: clamp(248px, 18.5vw, 370px);
@@ -318,11 +322,17 @@ html.dark .VPNavBar {
 /* 令牌 --accent / --text-small 只在首页作用域定义；导航 CTA 全站可见，须自带取值
    （双 class 提高特异性，压过后加载的 home.css .pp-btn-brand） */
 .pp-nav-extras .pp-nav-cta {
-  height: 44px;
-  padding: 0 20px;
-  font-size: 14px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0 14px;
+  gap: 6px;
+  font-size: 13px;
   font-weight: 600;
-  background: var(--pp-accent);
+  background: var(--pp-action);
+}
+
+.pp-nav-extras .pp-nav-cta:hover {
+  background: var(--pp-action-hover);
 }
 
 .pp-nav-cta svg {
@@ -411,8 +421,8 @@ html.pp-home.dark .VPNavScreen {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: var(--pp-control-standard);
+  height: var(--pp-control-standard);
   border-radius: 999px;
   color: var(--vp-c-text-2);
   transition: background 0.18s var(--vp-ease-out), color 0.18s var(--vp-ease-out);
@@ -494,8 +504,8 @@ html.pp-nav-over-dark .pp-nav-logo .pp-img-dark {
 /* ---------- 本地搜索按钮 ---------- */
 
 .VPNavBarSearch .DocSearch-Button {
-  height: 40px;
-  padding: 0 16px;
+  height: 38px;
+  padding: 0 12px;
   border: 1px solid transparent;
   border-radius: 999px;
   background: var(--pp-fill);
@@ -510,7 +520,7 @@ html.pp-nav-over-dark .pp-nav-logo .pp-img-dark {
 }
 
 .VPNavBarSearch .DocSearch-Button-Placeholder {
-  padding: 0 6px 0 4px;
+  padding: 0 4px;
 }
 
 .VPNavBarSearch .DocSearch-Button-Keys {
@@ -545,8 +555,8 @@ html.pp-nav-over-dark .VPNavBarSearch .DocSearch-Button:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: var(--pp-control-standard);
+  height: var(--pp-control-standard);
   border: none;
   border-radius: 999px;
   background: transparent;
@@ -592,7 +602,7 @@ html.pp-nav-over-dark .pp-theme-btn:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 40px;
+  height: var(--pp-control-standard);
   padding: 0 22px;
   border: 1px solid transparent;
   border-radius: 999px;
@@ -611,12 +621,12 @@ html.pp-nav-over-dark .pp-theme-btn:hover {
 }
 
 .pp-cta-row .VPButton.brand {
-  background: var(--pp-accent);
+  background: var(--pp-action);
   color: #fff;
 }
 
 .pp-cta-row .VPButton.brand:hover {
-  background: var(--pp-accent-hover);
+  background: var(--pp-action-hover);
 }
 
 .pp-cta-row .VPButton.alt {
@@ -1174,6 +1184,7 @@ html.pp-nav-over-dark .pp-theme-btn:hover {
 }
 
 .pp-dl-group {
+  scroll-margin-top: 88px;
   border: 1px solid var(--pp-border);
   border-radius: 12px;
   overflow: hidden;
@@ -1211,6 +1222,19 @@ html.pp-nav-over-dark .pp-theme-btn:hover {
   justify-content: space-between;
   gap: 10px 20px;
   padding: 12px 16px;
+}
+
+.vp-doc .pp-dl-note {
+  margin: 0;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--pp-border);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--pp-text-2);
+}
+
+.pp-dl-row > code {
+  overflow-wrap: anywhere;
 }
 
 .pp-dl-row + .pp-dl-row {
@@ -1281,16 +1305,16 @@ html.pp-nav-over-dark .pp-theme-btn:hover {
 
 /* 访客当前系统的安装包用品牌色实底，其余保持安静 */
 .vp-doc .pp-dl-group.current .pp-dl-btn {
-  background: var(--pp-accent);
+  background: var(--pp-action);
   color: #fff;
 }
 
 .dark .vp-doc .pp-dl-group.current .pp-dl-btn {
-  color: #0d1015;
+  color: #fff;
 }
 
 .vp-doc .pp-dl-group.current .pp-dl-btn:hover {
-  background: var(--pp-accent-hover);
+  background: var(--pp-action-hover);
 }
 
 /* ---------- 动效基元 ---------- */
@@ -1311,6 +1335,19 @@ html.pp-nav-over-dark .pp-theme-btn:hover {
 /* ---------- 响应式 ---------- */
 
 /* 平板宽度：横排导航仍在（<768 才换汉堡），英文标签较长，收紧间距并收起快捷键提示 */
+@media (max-width: 1200px) {
+  .VPNavBarSearch .DocSearch-Button {
+    width: 38px;
+    padding: 0;
+    background: transparent;
+  }
+
+  .VPNavBarSearch .DocSearch-Button-Placeholder,
+  .VPNavBarSearch .DocSearch-Button-Keys {
+    display: none;
+  }
+}
+
 @media (max-width: 900px) {
   .pp-nav-extras {
     gap: 8px;
@@ -1325,9 +1362,6 @@ html.pp-nav-over-dark .pp-theme-btn:hover {
     padding: 0 10px;
   }
 
-  .VPNavBarSearch .DocSearch-Button-Keys {
-    display: none;
-  }
 }
 
 /* 侧栏收成抽屉后正文变窄：宽表格在表内横向滚动，不撑破页面；

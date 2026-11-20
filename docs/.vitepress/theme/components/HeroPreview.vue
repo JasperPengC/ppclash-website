@@ -13,8 +13,8 @@ const shown = computed<Variant>(() => override.value ?? (isDark.value ? 'dark' :
 
 const alt = computed(() =>
   zh.value
-    ? 'PP Clash 主窗口：概览页显示当前节点、实时流量、代理分组与订阅用量'
-    : 'PP Clash main window: overview with current node, live traffic, proxy groups and subscription usage'
+    ? 'PP Clash 桌面与 Android 同屏展示：当前节点、实时流量与连接控制，界面使用演示数据'
+    : 'PP Clash on desktop and Android: current node, live traffic and connection controls, shown with sample data'
 )
 
 </script>
@@ -27,7 +27,7 @@ const alt = computed(() =>
         class="pp-preview-img"
         :src="withBase('/images/showcase-light.webp')"
         :alt="alt"
-        width="2400"
+        width="2980"
         height="1640"
         loading="eager"
         decoding="async"
@@ -37,7 +37,7 @@ const alt = computed(() =>
         class="pp-preview-img"
         :src="withBase('/images/showcase-dark.webp')"
         :alt="alt"
-        width="2400"
+        width="2980"
         height="1640"
         loading="eager"
         decoding="async"

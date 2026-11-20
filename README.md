@@ -10,6 +10,7 @@ PP Clash 的产品官网 + 使用文档，一体站：**VitePress** 构建，中
 ```bash
 npm install
 npm run dev        # 开发服务器（默认 http://localhost:5173/ppclash/）
+npm test           # 安装包解析、平台识别与缓存回归检查
 npm run build      # 构建到 docs/.vitepress/dist
 npm run preview    # 本地预览构建产物
 ```
@@ -28,7 +29,7 @@ docs/
 │       ├── release.ts    # Release 资源解析（安装包命名 → 平台 / 架构 / 格式）
 │       ├── releases.data.ts # 构建时读取最新 Release 作为静态快照
 │       ├── custom.css    # 令牌、浏览器表面、导航、文档页样式
-│       ├── home.css      # 首页夜航控制台 Night Deck（五段单屏 + 双色标题 + 显示器 mock + 终端卡 + FAQ）
+│       ├── home.css      # 首页四段布局、桌面与 Android 产品预览、分流演示、终端卡和 FAQ
 │       └── components/
 │           ├── ThemeImage.vue      # 明暗两版图片切换组件
 │           ├── AppearanceSwitch.vue # 三态外观下拉菜单（跟随系统/浅色/深色）
@@ -38,11 +39,11 @@ docs/
 │           └── RevealOnScroll.vue   # 渐显 + 视差 + 导航状态引擎
 ├── index.md              # 首页（中文）
 ├── download.md           # 下载页（中文）
-├── guide/                # 使用文档（中文，7 篇）
+├── guide/                # 使用文档（中文，含 Android 使用指南与版本更新）
 ├── en/                   # English 镜像（index/download/guide）
 └── public/
     ├── brand/            # 猫头 logo（明/暗/favicon）
-    └── images/           # 产品截图与特征裁片（明/暗两版）
+    └── images/           # 桌面与 Android 同屏产品截图（明/暗两版）
 
 package.json / package-lock.json # 构建依赖与脚本
 ```
@@ -64,10 +65,13 @@ package.json / package-lock.json # 构建依赖与脚本
 
 ### 下载列表如何更新
 
-下载页与「下载与安装」文档里的安装包列表不手写：构建时读取一次最新 Release 写进静态页面，访客打开页面时再向 GitHub 公开接口刷新一次。应用发了新版本后无需重新部署官网；两头都取不到时回退为命名规则表。
+下载页与「下载与安装」文档里的安装包列表不手写：构建时读取一次最新 Release 写进静态页面，访客打开页面时再向 GitHub 公开接口刷新一次。浏览器缓存有效期为 30 分钟，且不会用旧缓存覆盖较新的构建快照；两头都取不到时回退为命名规则表。已有平台的新版本安装包通常可自动更新；新增平台、文件命名变更、功能文案与版本说明仍需更新官网源码并重新部署。
+
+下载组件支持 macOS、Windows、Linux 和 Android，Android 仅展示可直接安装的 ARM64 / x86_64 APK，不将 AAB 当作安装包。Android 设备优先显示 Android 分组，实测状态依据产品发布说明维护。
 
 ## 内容来源与同步
 
-- 产品事实（功能、安装包命名、实测状态、安全防护）来自上游 `PPClash` 仓库的 `README.zh-CN.md` / `README.md` / `PRODUCT.md`；改动官网文案时请同步上游，反之亦然。
-- 截图（`showcase-*.webp`，演示数据）与猫头 logo 来自上游 `PPClash/assets/readme/`；产品出新截图后替换 `docs/public/images/` 并重新导出特征裁片。
+- 已发布功能、安装包命名、实测状态与迁移注意事项以 `JasperPengC/pp-clash` 的 GitHub Release 为准，并核对同级 `PPClash` 仓库的双语 README 与实现。开发中的能力不能提前标成已发布。
+- 本次文档对齐 v0.2.3：Android 正式发布、内置分流数据库、订阅卡片统一，以及覆写合并修正；双语版本说明位于 `docs/guide/changelog.md` 与 `docs/en/guide/changelog.md`。
+- 截图（`showcase-*.webp`，演示数据）与猫头 logo 来自上游 `PPClash/assets/readme/`；产品出新截图后替换 `docs/public/images/` 并检查桌面与 Android 同屏展示、明暗两版和移动端适配。
 - 双语必须成对修改：`docs/**`（中文）与 `docs/en/**`（English）一一对应。

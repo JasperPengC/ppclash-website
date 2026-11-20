@@ -59,7 +59,7 @@ export default defineConfig({
       label: '简体中文',
       lang: 'zh-CN',
       title: 'PP Clash',
-      description: '清晰、精致、紧凑的免费桌面代理客户端。管理 mihomo 订阅、代理分组和流量路由。',
+      description: '免费的 mihomo 客户端，管理订阅、代理分组和流量路由。支持 macOS、Windows、Linux 与 Android。',
       themeConfig: {
         nav: [
           { text: '文档', link: '/guide/introduction', activeMatch: '/guide/' },
@@ -78,6 +78,7 @@ export default defineConfig({
             {
               text: '使用',
               items: [
+                { text: 'Android 使用指南', link: '/guide/android' },
                 { text: '订阅与分组', link: '/guide/subscription' },
                 { text: '接管与分流', link: '/guide/routing' },
                 { text: '覆写配置', link: '/guide/override' },
@@ -86,7 +87,10 @@ export default defineConfig({
             },
             {
               text: '帮助',
-              items: [{ text: '常见问题', link: '/guide/faq' }]
+              items: [
+                { text: '常见问题', link: '/guide/faq' },
+                { text: '版本更新', link: '/guide/changelog' }
+              ]
             }
           ]
         },
@@ -121,7 +125,7 @@ export default defineConfig({
       lang: 'en-US',
       title: 'PP Clash',
       description:
-        'A clear, refined and compact free desktop proxy client. Manage mihomo subscriptions, proxy groups and traffic routing.',
+        'A free mihomo client for subscriptions, proxy groups and traffic routing on macOS, Windows, Linux and Android.',
       themeConfig: {
         nav: [
           { text: 'Docs', link: '/en/guide/introduction', activeMatch: '/en/guide/' },
@@ -140,6 +144,7 @@ export default defineConfig({
             {
               text: 'Usage',
               items: [
+                { text: 'Android Guide', link: '/en/guide/android' },
                 { text: 'Subscriptions & Groups', link: '/en/guide/subscription' },
                 { text: 'Takeover & Routing', link: '/en/guide/routing' },
                 { text: 'Overrides', link: '/en/guide/override' },
@@ -148,7 +153,10 @@ export default defineConfig({
             },
             {
               text: 'Help',
-              items: [{ text: 'FAQ', link: '/en/guide/faq' }]
+              items: [
+                { text: 'FAQ', link: '/en/guide/faq' },
+                { text: 'Release Notes', link: '/en/guide/changelog' }
+              ]
             }
           ]
         },

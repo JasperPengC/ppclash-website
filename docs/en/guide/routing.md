@@ -2,13 +2,13 @@
 
 ## Outbound modes
 
-Switch between three modes at the top right of the window (or in the quick panel):
+On desktop, switch modes at the top right of the window or in the quick panel. On Android, use the top of the overview:
 
 - **Rule**: forward according to the subscription's routing rules (recommended);
 - **Global**: send all traffic through the proxy;
 - **Direct**: connect everything directly.
 
-## System proxy vs TUN
+## Desktop System Proxy and TUN
 
 The two takeover modes have independent switches: with TUN on, the app blocks turning on the system proxy until TUN is turned off.
 
@@ -23,6 +23,10 @@ The system proxy shows its real listening port; TUN shows the actual network int
 ::: tip Need UDP through the proxy?
 The system proxy does not take over UDP. To route UDP traffic used by WebRTC and similar protocols, enable TUN.
 :::
+
+## Android VPN capture
+
+Android captures traffic through the system VPN service. Tap the connection button on Overview and allow the VPN request. Traffic is routed according to the selected outbound mode. Tap the same button to disconnect. See [Android Guide](/en/guide/android) for first-time setup.
 
 ## A stable exit comes first
 

@@ -4,7 +4,7 @@ title: Download
 
 # Download PP Clash
 
-The installers below are read automatically from the latest GitHub release. Pick the one that matches your operating system and CPU architecture:
+The desktop and Android installers below are read automatically from the latest GitHub release. Pick the one that matches your operating system and CPU architecture:
 
 <ReleaseDownloads />
 
@@ -18,12 +18,18 @@ PP Clash does not provide proxy nodes or subscription services. Please prepare y
 :::
 
 ::: tip Tested status
-macOS Intel and Windows x64 have passed on-device testing so far; the Apple silicon, Windows ARM64 and Linux builds are still pending verification.
+Tested on hardware: macOS Intel, Windows x64 and Android ARM64. Apple silicon, Windows ARM64, Linux and Android x86_64 builds are still pending verification.
 :::
+
+::: info Android release
+Android is available starting with v0.2.3 for 64-bit Android 7.0+ devices. Most phones use the `arm64-v8a` APK; choose `x86_64` for devices with that architecture. See the [Android Guide](/en/guide/android).
+:::
+
+Get the installer and `SHA256SUMS` from the same release; see [Verify a download](/en/guide/install#verify-download). Read about this update in the [v0.2.3 release notes](/en/guide/changelog).
 
 ## First launch on macOS
 
-The current test build is signed locally and not yet notarized by Apple. If the system blocks the first launch:
+The current macOS build is signed locally and not yet notarized by Apple. If the system blocks the first launch:
 
 1. Open "System Settings → Privacy & Security";
 2. Find PP Clash in the security notice and click "Open Anyway".

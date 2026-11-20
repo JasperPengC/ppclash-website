@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
 import { useRoute } from 'vitepress'
+import { initHomeMotion } from '../home-motion.mjs'
 
 const route = useRoute()
 let revealObserver: IntersectionObserver | null = null
@@ -8,6 +9,7 @@ let slideObserver: IntersectionObserver | null = null
 let rafId = 0
 let reduceMotion = false
 let classObserver: MutationObserver | null = null
+let motionCleanup: (() => void) | null = null
 
 const isHome = () => {
   const relative = route.data?.relativePath
@@ -23,6 +25,8 @@ const setup = async () => {
     const home = isHome()
     document.documentElement.classList.toggle('pp-home', home)
     document.documentElement.classList.add('rv-ready')
+    motionCleanup?.()
+    motionCleanup = home ? initHomeMotion() : null
 
     reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -154,6 +158,7 @@ onBeforeUnmount(() => {
   revealObserver?.disconnect()
   slideObserver?.disconnect()
   classObserver?.disconnect()
+  motionCleanup?.()
   window.removeEventListener('scroll', onScroll)
   window.removeEventListener('resize', onScroll)
   if (rafId) cancelAnimationFrame(rafId)

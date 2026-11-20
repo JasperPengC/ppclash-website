@@ -5,8 +5,8 @@ layout: home
 <section class="pp-slide pp-slide-hero" id="top">
   <div class="pp-hero">
     <div class="pp-hero-copy" data-reveal>
-      <h2 class="pp-display">Every connection, <span class="pp-tone">a route you can trust</span></h2>
-      <p class="pp-hero-sub">A desktop client for managing mihomo subscriptions, proxy groups and traffic routing. Rule-based routing, system proxy and TUN as independent switches, connection state always legible.</p>
+      <h2 class="pp-display">Every connection, <span class="pp-tone">on your terms</span></h2>
+      <p class="pp-hero-sub">Manage subscriptions, proxy groups and traffic routing in one client. Switch between Rule, Global and Direct, then check latency, traffic and connection status at a glance.</p>
       <div class="pp-hero-cta">
         <a class="pp-btn pp-btn-brand" href="download.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 21h16"/></svg>Download PP Clash — free</a>
         <a class="pp-btn pp-btn-ghost" href="guide/introduction.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15z"/></svg>Read the docs</a>
@@ -18,7 +18,7 @@ layout: home
     </div>
   </div>
   <div class="stage-footnote">
-    <span>Interface shown with demo data</span>
+    <span>macOS · Windows · Linux · Android · Sample data</span>
     <span>Does not provide proxy nodes or subscription services</span>
     <span>Free & open source · AGPL-3.0 · Built on mihomo</span>
   </div>
@@ -33,7 +33,7 @@ layout: home
   <div class="pp-section">
     <div class="pp-route-head" data-reveal>
       <h2 class="pp-display">Routing, <span class="pp-tone">made visible</span></h2>
-      <p class="pp-lead">Switch between rule, global and direct outbound modes in real time; system proxy and TUN are independent switches, and UDP traffic goes to TUN. Change the mode, tap a node, try it yourself.</p>
+      <p class="pp-lead">Switch between Rule, Global and Direct. Desktop uses System Proxy or TUN, while Android connects through the system VPN. The demo below shows traffic flow for each mode.</p>
       <span class="pp-live"><i aria-hidden="true"></i>INTERACTIVE · demo data</span>
     </div>
     <div data-reveal style="--rv-d: 120ms">
@@ -45,7 +45,7 @@ layout: home
   <div class="pp-section">
     <div class="pp-feat-head" data-reveal>
       <h2 class="pp-display">Config and data <span class="pp-tone">stay on your machine</span></h2>
-      <p class="pp-lead">Subscriptions, overrides, core and logs are managed locally; the source is public and auditable, free with no paid tiers.</p>
+      <p class="pp-lead">Subscriptions and connection records are managed locally. Desktop adds overrides, core management and backup tools. Free, with no paid tiers.</p>
     </div>
     <div class="pp-feat-grid rev">
       <div class="pp-list-rows" data-reveal>
@@ -53,7 +53,7 @@ layout: home
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 17l9 5 9-5"/></svg>
           <div>
             <h3>Subscriptions &amp; groups</h3>
-            <p>Import a subscription or local config; groups render as defined. Search, test and pin nodes.</p>
+            <p>Import subscriptions or local configs, track usage and expiry, and compare latency. Your node selections are remembered.</p>
             <a href="guide/subscription.html">Subscriptions &amp; groups<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
           </div>
         </div>
@@ -61,7 +61,7 @@ layout: home
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
           <div>
             <h3>Overrides &amp; core</h3>
-            <p>YAML / JS overrides validated live; mihomo core versions managed locally; back up and restore app data.</p>
+            <p>Desktop supports YAML / JS overrides with rule additions and conflict merging, core version management, and data backup and restore.</p>
             <a href="guide/override.html">Overrides<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
           </div>
         </div>
@@ -69,7 +69,7 @@ layout: home
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           <div>
             <h3>Security &amp; logs</h3>
-            <p>Encrypted DNS, Fake-IP, STUN blocking and WebRTC detection on by default; logs one click away.</p>
+            <p>Default configs include encrypted DNS, Fake-IP and STUN blocking in Rule mode. Desktop adds WebRTC checks; connection and log records are available in their respective views.</p>
             <a href="guide/security.html">Security<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
           </div>
         </div>
@@ -80,28 +80,25 @@ layout: home
           <span>override.yaml</span>
           <em>YAML · deep merge</em>
         </div>
-        <pre><span class="tk-c"># Override example: replace encrypted DNS servers</span>
-<span class="tk-k">dns</span>:
-  <span class="tk-k">nameserver</span>:
-    - <span class="tk-s">https://dns.alidns.com/dns-query</span>
-    - <span class="tk-s">https://doh.pub/dns-query</span>
-<span class="tk-c"># objects merge key by key; arrays replace wholly</span>
-<span class="tk-k">tun</span>:
-  <span class="tk-k">enable</span>: <span class="tk-p">true</span>
-  <span class="tk-k">stack</span>: <span class="tk-s">mixed</span></pre>
+        <pre><span class="tk-c"># Add a rule before the MATCH fallback</span>
+<span class="tk-k">rules</span>:
+  - <span class="tk-s">DOMAIN-SUFFIX,example.com,DIRECT</span>
+<span class="tk-c"># Replace matching rules; keep the others</span>
+<span class="tk-k">hosts</span>:
+  <span class="tk-k">example.internal</span>: <span class="tk-s">192.168.1.10</span></pre>
       </div>
     </div>
     <div class="pp-tiles">
       <div class="pp-tile" data-reveal>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 6-6 6 6 6M16 6l6 6-6 6"/></svg>
         <h3>Open source</h3>
-        <p>The full source is public; anyone can read, review and reproduce the build.</p>
+        <p>Source code for published versions is available to read, review and build.</p>
         <span class="pp-mono">AGPL-3.0-only</span>
       </div>
       <div class="pp-tile" data-reveal style="--rv-d: 80ms">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
         <h3>Runs locally</h3>
-        <p>Config and data stay on your machine, backed up and restored by you.</p>
+        <p>Config and data stay on your device. Desktop includes backup and restore tools.</p>
         <span class="pp-mono">mihomo core</span>
       </div>
       <div class="pp-tile" data-reveal style="--rv-d: 160ms">
@@ -117,7 +114,7 @@ layout: home
   <div class="pp-section pp-close-grid">
     <div class="pp-close-head" data-reveal>
       <h2 class="pp-display">Start using<br /><span class="pp-tone">PP Clash.</span></h2>
-      <p class="pp-lead">Installers ship with every release on GitHub Releases — pick your system and architecture. Test status is labeled honestly.</p>
+      <p class="pp-lead">Download desktop and Android installers from GitHub Releases. Choose your system and architecture; most Android phones use the ARM64 APK.</p>
       <div class="pp-close-cta">
         <a class="pp-btn pp-btn-brand" href="download.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 21h16"/></svg>Go to downloads</a>
         <a class="pp-btn pp-btn-ghost" href="guide/quick-start.html">Quick start</a>
@@ -131,7 +128,7 @@ layout: home
       </details>
       <details>
         <summary>Which platforms and architectures are supported?</summary>
-        <div class="pp-faq-a">macOS (Intel / Apple silicon), Windows (x64 / ARM64), Linux (x64 / ARM64). Device-tested: macOS Intel and Windows x64; the rest pending verification. Linux requires WebKitGTK 4.1 and Ayatana AppIndicator.</div>
+        <div class="pp-faq-a">Desktop supports macOS (Intel / Apple silicon), Windows (x64 / ARM64) and Linux (x64 / ARM64), with macOS Intel and Windows x64 tested on hardware. The Android release supports 64-bit Android 7.0+ devices. ARM64 has been tested on an Android 13 phone; x86_64 is awaiting hardware testing. See <a href="guide/android.html">Android Guide</a>.</div>
       </details>
       <details>
         <summary>macOS blocks the first open — what now?</summary>
@@ -139,11 +136,11 @@ layout: home
       </details>
       <details>
         <summary>System proxy vs TUN — what's the difference?</summary>
-        <div class="pp-faq-a">The system proxy takes over TCP only; UDP (including some WebRTC / STUN paths) needs TUN mode. Both are independent switches, see <a href="guide/routing.html">Takeover &amp; routing</a>.</div>
+        <div class="pp-faq-a">Desktop System Proxy does not capture UDP; TUN handles UDP traffic such as WebRTC. Turn off TUN before enabling System Proxy. Android uses the system VPN service. See <a href="guide/routing.html">Takeover &amp; routing</a>.</div>
       </details>
       <details>
         <summary>Where do my config and data live?</summary>
-        <div class="pp-faq-a">Entirely in the local app data directory, backed up and restored by you; the source is public under AGPL-3.0-only so data handling is auditable, see <a href="guide/security.html">Security</a>.</div>
+        <div class="pp-faq-a">In the local app data directory, with backup and restore tools on desktop. Protection depends on the active configuration and traffic capture. See <a href="guide/security.html">Security</a>.</div>
       </details>
     </div>
   </div>

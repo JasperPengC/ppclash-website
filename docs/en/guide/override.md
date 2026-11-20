@@ -1,6 +1,6 @@
 # Overrides
 
-An override (覆写) is PP Clash's advanced layer: the app first synthesizes a base config from the **subscription** (nodes, groups, rules) and its **built-in security policy**, then applies your overrides **one by one in list order**, and only then hands the result to the mihomo core. Overrides are for things the rules page can't do — bulk-editing groups, pruning nodes, rewriting array fields.
+Overrides (覆写) are an advanced desktop feature. The app builds a base config from the **subscription** (nodes, groups, rules) and its **built-in security policy**, applies overrides **in list order**, then passes the result to mihomo. Use them to add rules, update named groups and change configuration fields.
 
 The 配置覆写 (Overrides) page supports multiple override files, each independently enabled or disabled; disabled files are skipped during merging.
 
@@ -8,9 +8,9 @@ The 配置覆写 (Overrides) page supports multiple override files, each indepen
 
 | | YAML override | JS override |
 | --- | --- | --- |
-| Best for | Overwriting fields, wholesale array replacement | Logic-driven bulk edits (filtering, mapping, conditional rewrites) |
-| Format | Top-level object (key-value pairs); a top-level array replaces the config wholesale | A function body that mutates `config` or returns a new one |
-| Merging | Deep-merged into the current config | Return value replaces the current config wholesale |
+| Best for | Updating fields and adding rules or array entries | Iteration, conditions and bulk edits |
+| Format | A configuration object (key-value pairs) | A function body that mutates `config` or returns an object |
+| Merging | Objects merge by key; arrays merge by entry identity | The result uses the same merge rules, with omitted top-level fields removed |
 | Execution | Parsed with js-yaml | QuickJS isolated interpreter, 300ms budget |
 
 Both modes support the <span v-pre>{{CURRENT_NODE}}</span> placeholder: it is replaced with the **currently selected node name** (or `DIRECT` when nothing is selected) at generation time — before the script runs, so in JS you receive a literal string.
@@ -20,15 +20,16 @@ Both modes support the <span v-pre>{{CURRENT_NODE}}</span> placeholder: it is re
 A YAML override is a "patch" deep-merged into the current config:
 
 - **Objects**: merged key by key, recursively;
-- **Arrays: replaced wholesale** — not appended! To edit an array, rewrite it in full or use JS;
+- **Arrays**: existing entries are retained and new entries appended. Objects with the same name replace the matching entry; duplicate strings or numbers are deduplicated;
+- **Rules**: a rule with the same matching condition replaces the existing rule. Domain matching identities are case-insensitive. New rules are inserted before the first `MATCH` / `FINAL` fallback;
 - **Scalars**: overwritten directly;
-- **Top level**: an object is deep-merged into the current config; a top-level array replaces the whole config; other types (e.g. a plain scalar) are ignored for that file.
+- **Top level**: use a configuration object, merged by key. An empty array retains the original array entries.
 
 The editor validates syntax live (same parser as the generator) and flags errors in place.
 
-### Example 1: replace the encrypted DNS servers
+### Example 1: add encrypted DNS servers
 
-The app generates encrypted DNS by default; replace the nameservers wholesale with servers you trust:
+Add servers to the existing `nameserver` list. Addresses already present are deduplicated:
 
 ```yaml
 dns:
@@ -44,6 +45,15 @@ hosts:
   "example.internal": 192.168.1.10
 ```
 
+### Example 3: add or update a routing rule
+
+```yaml
+rules:
+  - DOMAIN-SUFFIX,example.com,DIRECT
+```
+
+An existing rule for the same domain suffix gets its target updated. Otherwise the new rule is inserted before the fallback, preserving the other subscription rules.
+
 ## JS override: a config transform
 
 What you write in the editor is a **function body**; execution is equivalent to:
@@ -58,27 +68,22 @@ What you write in the editor is a **function body**; execution is equivalent to:
 Key points:
 
 - `config` is the mihomo config object with core-native keys (`proxies`, `proxy-groups`, `rules`, `mixed-port`, …);
-- You can mutate `config` in place or `return` a new object; it **must be an object** (not an array, no async);
+- You can mutate `config` in place or `return` an object; it **must be an object** (not an array, no async). The result is then merged with the original configuration;
 - It runs in a QuickJS isolated interpreter: no network, no host APIs, no module loading — pure data transformation only;
 - Budget: 300ms execution, 64MB memory, 8MB JSON input/output — timeouts or overruns fail with an error and usable data is kept.
 
-JS is the right tool for arrays (YAML can only replace them wholesale). The editor validates the function body live.
+JS and YAML use the same array merge rules. The editor validates the function body live. Removing entries with `filter` or returning an empty array retains the original entries during merging. Use the app's routing rules page to delete or reorder subscription rules.
 
-### Example 1: filter nodes by keyword
+### Example 1: change node options conditionally
 
 ```js
-// Drop nodes whose names contain marketing keywords, and clean up group references
-// 关键词对应订阅里的真实节点名，通常是中文
-const keywords = ['官网', '流量', '到期'];
-const bad = (name) => keywords.some((k) => name.includes(k));
-
-config.proxies = (config.proxies || []).filter((p) => !bad(p.name));
-for (const g of config['proxy-groups'] || []) {
-  g.proxies = (g.proxies || []).filter((n) => !bad(n));
+// Update matching named nodes while retaining the others
+for (const node of config.proxies || []) {
+  if (node.type === 'trojan') {
+    node.udp = true;
+  }
 }
 ```
-
-The keywords in the example match real node names in a subscription, which are usually Chinese — replace them with the words that actually appear in your own node names.
 
 ### Example 2: turn a latency auto-group into manual selection
 
@@ -100,14 +105,14 @@ for (const g of config['proxy-groups'] || []) {
 // {{CURRENT_NODE}} is replaced with the current node name before the script runs
 const current = '{{CURRENT_NODE}}';
 
-config.rules = [
-  `DOMAIN-SUFFIX,openai.com,${current}`,
-  ...config.rules,
-];
+config.rules = (config.rules || []).filter(
+  (rule) => !rule.toLowerCase().startsWith('domain-suffix,openai.com,')
+);
+config.rules.push(`DOMAIN-SUFFIX,openai.com,${current}`);
 ```
 
 ::: warning Mind the rule order
-The `rules` array matches **top to bottom**. Inserting at the very front puts your rule ahead of the app's protection rules; to place it after them, locate the boundary yourself. Sorting, toggling and retargeting subscription rules needs no override — use the rules page in the app first.
+The `rules` array matches **top to bottom**. Matching rules update in place, and new rules are inserted before the fallback. Earlier rules may still take precedence. This example removes the old matching rule from the script result before adding the new one, so the old target cannot overwrite the new target during merging. Use the app's routing rules page for sorting, toggling or retargeting subscription rules.
 :::
 
 ## Order & failure handling

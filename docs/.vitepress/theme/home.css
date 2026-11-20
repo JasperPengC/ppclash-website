@@ -30,6 +30,9 @@ html.pp-home {
   --text-caption: 12px;
   --text-small: 14px;
   --text-body: 16px;
+  --home-control-compact: 32px;
+  --home-control-standard: 40px;
+  --home-control-primary: 44px;
   color-scheme: light;
 }
 
@@ -68,7 +71,39 @@ html.pp-home.dark {
 /* ---------- 舞台骨架 ---------- */
 
 html.pp-home {
-  scroll-snap-type: y proximity;
+  scroll-snap-type: none;
+}
+
+html.pp-home[data-paged-scroll='true'] {
+  scroll-snap-type: y mandatory;
+}
+
+html.pp-home[data-natural-scroll='true'] {
+  scroll-snap-type: none;
+}
+
+html.pp-home[data-natural-scroll='true'] .pp-slide {
+  height: auto;
+  min-height: 100svh;
+}
+
+html.pp-home[data-natural-scroll='true'] .VPHome .pp-slide-hero {
+  height: auto;
+}
+
+html.pp-home[data-scene-motion='true'] .pp-slide-head,
+html.pp-home[data-scene-motion='true'] .pp-route-head,
+html.pp-home[data-scene-motion='true'] .pp-feat-head,
+html.pp-home[data-scene-motion='true'] .pp-close-head {
+  translate: 0 calc(var(--scene-shift, 0px) * -0.35);
+}
+
+html.pp-home[data-scene-motion='true'] .pp-macbook,
+html.pp-home[data-scene-motion='true'] .pp-route,
+html.pp-home[data-scene-motion='true'] .pp-feat-grid,
+html.pp-home[data-scene-motion='true'] .pp-tiles,
+html.pp-home[data-scene-motion='true'] .pp-faq {
+  translate: 0 var(--scene-shift, 0px);
 }
 
 html.pp-home body {
@@ -93,7 +128,6 @@ html.pp-home .VPHome .vp-doc {
 
 .pp-slide {
   position: relative;
-  min-height: 100vh;
   min-height: 100svh;
   scroll-snap-align: start;
   scroll-snap-stop: always;
@@ -189,11 +223,15 @@ html.pp-home .VPHome .vp-doc {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: min(100%, 1180px);
+  min-width: 0;
   max-width: min(100%, 1180px);
 }
 
 .pp-hero-copy .pp-display {
-  font-size: clamp(38px, 4.15vw, 80px);
+  width: 100%;
+  max-width: 1120px;
+  font-size: clamp(38px, 4.15vw, 68px);
   font-weight: 700;
   line-height: 1.12;
 }
@@ -291,7 +329,7 @@ html.pp-home .VPHome .vp-doc {
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  gap: 14px;
+  gap: 10px;
   container-type: size;
 }
 
@@ -308,9 +346,9 @@ html.pp-home .VPHome .vp-doc {
 .pp-preview-img {
   display: block;
   flex: none;
-  width: min(100%, calc((100cqh - 74px) * 1.4634));
+  width: min(100%, calc((100cqh - 74px) * 2980 / 1640));
   height: auto;
-  aspect-ratio: 2400 / 1640;
+  aspect-ratio: 2980 / 1640;
 }
 
 .product-switch {
@@ -318,7 +356,7 @@ html.pp-home .VPHome .vp-doc {
   display: inline-flex;
   align-items: center;
   background: var(--surface);
-  padding: 5px;
+  padding: 3px;
   border-radius: 999px;
 }
 
@@ -328,9 +366,11 @@ html.pp-home .VPHome .vp-doc {
   justify-content: center;
   border: 0;
   color: var(--ink-2);
-  padding: 9px 22px;
+  height: var(--home-control-compact);
+  padding: 0 14px;
   border-radius: 999px;
   font-size: var(--text-caption);
+  font-weight: 500;
   font-family: inherit;
   background: transparent;
   cursor: pointer;
@@ -481,8 +521,8 @@ html.pp-home .VPHome .vp-doc {
 .pp-seg {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
-  padding: 4px;
+  gap: 2px;
+  padding: 3px;
   border-radius: 999px;
   background: var(--group);
 }
@@ -495,7 +535,8 @@ html.pp-home .VPHome .vp-doc {
   font-family: inherit;
   font-size: var(--text-small);
   font-weight: 500;
-  padding: 8px 6px;
+  height: 30px;
+  padding: 0 8px;
   border-radius: 999px;
   cursor: pointer;
   transition: background 0.2s var(--vp-ease-out), color 0.2s var(--vp-ease-out);
@@ -662,7 +703,7 @@ html.pp-home.dark .pp-seg button.on {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 30px;
+  height: var(--home-control-compact);
   padding: 0 14px;
   border-radius: 999px;
   border: none;
@@ -1391,8 +1432,8 @@ button.pp-node-row:hover {
   align-items: center;
   justify-content: center;
   gap: 9px;
-  height: 44px;
-  padding: 13px 22px;
+  height: var(--home-control-primary);
+  padding: 0 22px;
   border-radius: 999px;
   font-size: var(--text-small);
   font-weight: 500;
@@ -1413,12 +1454,12 @@ button.pp-node-row:hover {
 }
 
 .pp-btn-brand {
-  background: var(--home-action, var(--accent));
+  background: var(--pp-action);
   color: #fff !important;
 }
 
 .pp-btn-brand:hover {
-  filter: brightness(0.92);
+  background: var(--pp-action-hover);
   transform: translateY(-1px);
 }
 
@@ -1512,10 +1553,6 @@ html.rv-ready [data-reveal].rv-in {
 
 /* 平板及以下：分栏改单列，段落超过一屏，关闭吸附 */
 @media (max-width: 900px) {
-  html.pp-home {
-    scroll-snap-type: none;
-  }
-
   .pp-rail {
     display: none;
   }
@@ -1605,7 +1642,9 @@ html.rv-ready [data-reveal].rv-in {
   }
 
   .pp-hero-copy .pp-display {
-    font-size: clamp(32px, 8.6vw, 46px);
+    font-size: clamp(32px, 8.6vw, 42px);
+    max-width: 13ch;
+    text-wrap: balance;
   }
 
   .vp-doc .pp-hero-sub {
@@ -1711,8 +1750,8 @@ html.rv-ready [data-reveal].rv-in {
   }
 }
 
-/* 矮窗：一屏放不下分段内容，关闭吸附；Hero 收紧纵向节奏，把高度让给截图 */
-@media (max-height: 780px) {
+/* 极矮窗口：无法提供完整分页场景时交回自然滚动 */
+@media (max-height: 699px) {
   html.pp-home {
     scroll-snap-type: none;
   }
@@ -1752,6 +1791,10 @@ html.rv-ready [data-reveal].rv-in {
     scroll-snap-type: none;
   }
 
+  html.pp-home .pp-slide {
+    translate: none !important;
+  }
+
   .pp-hero-media,
   .pp-live i {
     animation: none !important;
@@ -1779,4 +1822,28 @@ html.rv-ready [data-reveal].rv-in {
   .pp-faq summary::after {
     transition: none !important;
   }
+}
+
+html.pp-home[data-natural-scroll='true'] .pp-par,
+html.pp-home[data-natural-scroll='true'] .pp-par-fade {
+  translate: none;
+  opacity: 1;
+}
+
+html.pp-home[data-natural-scroll='true'] .pp-macbook {
+  flex: none;
+  height: auto;
+}
+
+html.pp-home[data-natural-scroll='true'] .pp-preview {
+  height: auto;
+  container-type: normal;
+}
+
+html.pp-home[data-natural-scroll='true'] .pp-preview-stage {
+  flex: none;
+}
+
+html.pp-home[data-natural-scroll='true'] .pp-preview-img {
+  width: min(100%, 1120px);
 }
